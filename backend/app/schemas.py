@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
-from datetime import date, datetime
+from datetime import date as py_date, datetime
 from decimal import Decimal
 from enum import Enum
 
@@ -76,7 +76,7 @@ class TransactionBase(BaseModel):
     category_id: Optional[int] = None
     amount: Decimal
     description: Optional[str] = None
-    date: date
+    date: py_date
 
 
 class TransactionCreate(TransactionBase):
@@ -88,7 +88,7 @@ class TransactionUpdate(BaseModel):
     category_id: Optional[int] = None
     amount: Optional[Decimal] = None
     description: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[py_date] = None
 
 
 class TransactionOut(TransactionBase):
