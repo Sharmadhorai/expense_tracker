@@ -80,6 +80,7 @@ def get_category_breakdown(
     return sorted(result, key=lambda x: x.total, reverse=True)
 
 
+@router.get("/monthly-trend", response_model=List[schemas.TrendPoint])
 @router.get("/trend", response_model=List[schemas.TrendPoint])
 def get_trend(
     period: str = Query("monthly"),
@@ -93,18 +94,24 @@ def get_trend(
     if period == "monthly":
         # 12 months of the given year
         for m in range(1, 13):
+            _, last_d = calendar.monthrange(year, m)
+            start_d = date(year, m, 1)
+            end_d = date(year, m, last_d)
+
             income = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "income",
-                func.strftime("%Y", models.Transaction.date) == str(year),
-                func.strftime("%m", models.Transaction.date) == f"{m:02d}",
+                models.Transaction.date >= start_d,
+                models.Transaction.date <= end_d,
             ).scalar() or Decimal("0")
+
             expense = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "expense",
-                func.strftime("%Y", models.Transaction.date) == str(year),
-                func.strftime("%m", models.Transaction.date) == f"{m:02d}",
+                models.Transaction.date >= start_d,
+                models.Transaction.date <= end_d,
             ).scalar() or Decimal("0")
+
             result.append(schemas.TrendPoint(
                 label=calendar.month_abbr[m],
                 income=income,
@@ -115,32 +122,41 @@ def get_trend(
         # All days in given month/year
         days_in_month = calendar.monthrange(year, month)[1]
         for d in range(1, days_in_month + 1):
-            day_str = f"{year}-{month:02d}-{d:02d}"
+            target_date = date(year, month, d)
             income = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "income",
-                func.strftime("%Y-%m-%d", models.Transaction.date) == day_str,
+                models.Transaction.date == target_date,
             ).scalar() or Decimal("0")
+
             expense = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "expense",
-                func.strftime("%Y-%m-%d", models.Transaction.date) == day_str,
+                models.Transaction.date == target_date,
             ).scalar() or Decimal("0")
+
             result.append(schemas.TrendPoint(label=str(d), income=income, expense=expense))
 
     elif period == "yearly":
         # Last 5 years
         for y in range(year - 4, year + 1):
+            start_d = date(y, 1, 1)
+            end_d = date(y, 12, 31)
+
             income = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "income",
-                func.strftime("%Y", models.Transaction.date) == str(y),
+                models.Transaction.date >= start_d,
+                models.Transaction.date <= end_d,
             ).scalar() or Decimal("0")
+
             expense = db.query(func.sum(models.Transaction.amount)).filter(
                 models.Transaction.user_id == current_user.id,
                 models.Transaction.type == "expense",
-                func.strftime("%Y", models.Transaction.date) == str(y),
+                models.Transaction.date >= start_d,
+                models.Transaction.date <= end_d,
             ).scalar() or Decimal("0")
+
             result.append(schemas.TrendPoint(label=str(y), income=income, expense=expense))
 
     return result
