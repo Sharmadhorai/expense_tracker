@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate  = useNavigate()
-  const [form, setForm]     = useState({ email: '', password: '' })
-  const [error, setError]   = useState('')
-  const [loading, setLoading] = useState(false)
+  const [form, setForm]         = useState({ email: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
   const onChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -110,8 +112,38 @@ export default function Login() {
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input className="form-input" type="password" name="password" value={form.password}
-                onChange={onChange} placeholder="••••••••" required />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-input"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={form.password}
+                  onChange={onChange}
+                  placeholder="••••••••"
+                  required
+                  style={{ paddingRight: '2.6rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.25rem',
+                  }}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <RiEyeOffLine size={18} /> : <RiEyeLine size={18} />}
+                </button>
+              </div>
             </div>
             <button className="btn btn-primary" type="submit" disabled={loading}
               style={{ width: '100%', justifyContent: 'center', padding: '0.8rem', fontSize: '0.95rem', marginTop: '0.5rem' }}>

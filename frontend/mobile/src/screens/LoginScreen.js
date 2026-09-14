@@ -7,9 +7,10 @@ import { useAuth } from '../context/AuthContext'
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth()
-  const [email, setEmail]     = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail]               = useState('')
+  const [password, setPassword]         = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading]           = useState(false)
 
   const onLogin = async () => {
     if (!email || !password) { Alert.alert('Error', 'Please fill all fields'); return }
@@ -29,7 +30,7 @@ export default function LoginScreen({ navigation }) {
         {/* Header */}
         <View style={s.header}>
           <View style={s.logo}><Text style={s.logoText}>💰</Text></View>
-          <Text style={s.brand}>Expense<Text style={{ color:'#6C63FF' }}>Track</Text></Text>
+          <Text style={s.brand}>Expense<Text style={{ color:'#8b5cf6' }}>Track</Text></Text>
           <Text style={s.tagline}>Take control of your finances</Text>
         </View>
 
@@ -44,8 +45,22 @@ export default function LoginScreen({ navigation }) {
             autoCapitalize="none" autoCorrect={false} />
 
           <Text style={s.label}>Password</Text>
-          <TextInput style={s.input} placeholder="••••••••" placeholderTextColor="#5A5A7A"
-            value={password} onChangeText={setPassword} secureTextEntry />
+          <View style={s.passwordContainer}>
+            <TextInput
+              style={[s.input, { flex: 1, marginBottom: 0, paddingRight: 40 }]}
+              placeholder="••••••••"
+              placeholderTextColor="#5A5A7A"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity
+              style={s.eyeBtn}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Text style={s.eyeIcon}>{showPassword ? '🙈' : '👁️'}</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity style={s.btn} onPress={onLogin} disabled={loading}>
             {loading ? <ActivityIndicator color="white" /> : <Text style={s.btnText}>Sign In</Text>}
@@ -87,10 +102,26 @@ const s = StyleSheet.create({
     borderRadius:10, padding:14, color:'#F0F0FF', fontSize:15,
     marginBottom:16,
   },
+  passwordContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  eyeBtn: {
+    position: 'absolute',
+    right: 12,
+    padding: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    fontSize: 16,
+  },
   btn: {
-    backgroundColor:'#6C63FF', borderRadius:12, padding:16,
+    backgroundColor:'#8b5cf6', borderRadius:12, padding:16,
     alignItems:'center', marginTop:8, marginBottom:16,
-    shadowColor:'#6C63FF', shadowOpacity:0.4, shadowRadius:12, shadowOffset:{width:0,height:4},
+    shadowColor:'#8b5cf6', shadowOpacity:0.4, shadowRadius:12, shadowOffset:{width:0,height:4},
   },
   btnText: { color:'white', fontWeight:'700', fontSize:16 },
   link: { textAlign:'center', color:'#9090BB', fontSize:14 },

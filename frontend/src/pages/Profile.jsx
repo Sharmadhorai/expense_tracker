@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import API from '../api/client'
-import { RiUserLine, RiMailLine, RiLockLine, RiGlobalLine, RiLogoutBoxFill } from 'react-icons/ri'
+import { RiUserLine, RiMailLine, RiLockLine, RiGlobalLine, RiLogoutBoxFill, RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
 
 const CURRENCIES = [
   { code:'USD', label:'US Dollar ($)' },
@@ -21,6 +21,9 @@ export default function Profile() {
 
   const [profileForm, setProfileForm] = useState({ name: user?.name||'', email: user?.email||'', currency: user?.currency||'USD' })
   const [passForm, setPassForm]       = useState({ current_password:'', new_password:'', confirm:'' })
+  const [showCurrentPass, setShowCurrentPass] = useState(false)
+  const [showNewPass, setShowNewPass]         = useState(false)
+  const [showConfirmPass, setShowConfirmPass] = useState(false)
   const [profileMsg, setProfileMsg]   = useState('')
   const [passMsg, setPassMsg]         = useState('')
   const [profileErr, setProfileErr]   = useState('')
@@ -135,18 +138,102 @@ export default function Profile() {
           <form onSubmit={onPassSave} style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
             <div className="form-group">
               <label className="form-label">Current Password</label>
-              <input className="form-input" type="password" value={passForm.current_password}
-                onChange={e => setPassForm(f => ({...f, current_password:e.target.value}))} required />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-input"
+                  type={showCurrentPass ? 'text' : 'password'}
+                  value={passForm.current_password}
+                  onChange={e => setPassForm(f => ({...f, current_password:e.target.value}))}
+                  required
+                  style={{ paddingRight: '2.6rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPass(!showCurrentPass)}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.25rem',
+                  }}
+                  aria-label={showCurrentPass ? 'Hide password' : 'Show password'}
+                  title={showCurrentPass ? 'Hide password' : 'Show password'}
+                >
+                  {showCurrentPass ? <RiEyeOffLine size={18} /> : <RiEyeLine size={18} />}
+                </button>
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">New Password</label>
-              <input className="form-input" type="password" value={passForm.new_password}
-                onChange={e => setPassForm(f => ({...f, new_password:e.target.value}))} required />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-input"
+                  type={showNewPass ? 'text' : 'password'}
+                  value={passForm.new_password}
+                  onChange={e => setPassForm(f => ({...f, new_password:e.target.value}))}
+                  required
+                  style={{ paddingRight: '2.6rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPass(!showNewPass)}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.25rem',
+                  }}
+                  aria-label={showNewPass ? 'Hide password' : 'Show password'}
+                  title={showNewPass ? 'Hide password' : 'Show password'}
+                >
+                  {showNewPass ? <RiEyeOffLine size={18} /> : <RiEyeLine size={18} />}
+                </button>
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Confirm New Password</label>
-              <input className="form-input" type="password" value={passForm.confirm}
-                onChange={e => setPassForm(f => ({...f, confirm:e.target.value}))} required />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  className="form-input"
+                  type={showConfirmPass ? 'text' : 'password'}
+                  value={passForm.confirm}
+                  onChange={e => setPassForm(f => ({...f, confirm:e.target.value}))}
+                  required
+                  style={{ paddingRight: '2.6rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPass(!showConfirmPass)}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.25rem',
+                  }}
+                  aria-label={showConfirmPass ? 'Hide password' : 'Show password'}
+                  title={showConfirmPass ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPass ? <RiEyeOffLine size={18} /> : <RiEyeLine size={18} />}
+                </button>
+              </div>
             </div>
             <button type="submit" className="btn btn-primary" disabled={savingPass}>
               {savingPass ? <><span className="spinner" style={{width:14,height:14}} /> Updating…</> : 'Update Password'}
