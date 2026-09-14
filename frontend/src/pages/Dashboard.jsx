@@ -195,62 +195,37 @@ export default function Dashboard() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '0.85rem 1rem',
+                  padding: '0.85rem 1.15rem',
                   borderRadius: '12px',
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--border)',
-                  gap: '0.75rem',
                   transition: 'background 0.2s, transform 0.2s',
                 }}>
-                  {/* Category icon & details */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: 12,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.25rem',
-                      background: isIncome ? 'rgba(5,150,105,0.12)' : 'rgba(220,38,38,0.12)',
-                      border: `1px solid ${isIncome ? 'rgba(5,150,105,0.25)' : 'rgba(220,38,38,0.25)'}`,
-                      flexShrink: 0
-                    }}>
-                      {t.category?.icon || (isIncome ? '💰' : '💳')}
-                    </div>
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                          {t.category?.name || 'Uncategorized'}
-                        </span>
-                        <span style={{
-                          fontSize: '0.68rem',
-                          padding: '0.15rem 0.5rem',
-                          borderRadius: '99px',
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          background: isIncome ? 'rgba(5,150,105,0.15)' : 'rgba(220,38,38,0.15)',
-                          color: isIncome ? 'var(--income-color)' : 'var(--expense-color)',
-                          border: `1px solid ${isIncome ? 'rgba(5,150,105,0.3)' : 'rgba(220,38,38,0.3)'}`,
-                          letterSpacing: '0.5px'
-                        }}>
-                          {t.type}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <span>{new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                        {t.description ? <span> • {t.description}</span> : null}
-                      </div>
-                    </div>
-                  </div>
+                  {/* Left: Type Badge */}
+                  <span style={{
+                    fontSize: '0.78rem',
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '99px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    background: isIncome ? 'rgba(5,150,105,0.15)' : 'rgba(220,38,38,0.15)',
+                    color: isIncome ? 'var(--income-color)' : 'var(--expense-color)',
+                    border: `1px solid ${isIncome ? 'rgba(5,150,105,0.35)' : 'rgba(220,38,38,0.35)'}`,
+                    letterSpacing: '0.75px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: isIncome ? 'var(--income-color)' : 'var(--expense-color)' }} />
+                    {t.type}
+                  </span>
 
-                  {/* Amount with colored sign */}
+                  {/* Right: Amount */}
                   <div style={{
                     textAlign: 'right',
-                    fontWeight: 700,
-                    fontSize: '1.05rem',
+                    fontWeight: 800,
+                    fontSize: '1.1rem',
                     color: isIncome ? 'var(--income-color)' : 'var(--expense-color)',
-                    flexShrink: 0
                   }}>
                     {isIncome ? '+' : '-'}{fmt(t.amount, cur)}
                   </div>
