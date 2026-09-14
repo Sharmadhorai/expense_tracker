@@ -29,16 +29,23 @@ export default function Dashboard() {
     const loadData = async () => {
       setLoading(true)
       try {
-        const [sumRes, trendRes, catRes, recRes] = await Promise.allSettled([
+        const [sumRes, trendRes, catRes, recRes, txRes] = await Promise.allSettled([
           API.get('/reports/summary'),
           API.get(`/reports/trend?period=monthly&year=${year}`),
           API.get('/reports/category-breakdown'),
           API.get('/reports/recent-transactions?limit=8'),
+          API.get('/transactions?limit=10'),
         ])
         if (sumRes.status === 'fulfilled') setSummary(sumRes.value.data)
         if (trendRes.status === 'fulfilled') setTrend(trendRes.value.data)
         if (catRes.status === 'fulfilled') setBreakdown(catRes.value.data)
-        if (recRes.status === 'fulfilled') setRecent(recRes.value.data)
+
+        const txList = (recRes.status === 'fulfilled' && Array.isArray(recRes.value.data) && recRes.value.data.length > 0)
+          ? recRes.value.data
+          : (txRes.status === 'fulfilled' && Array.isArray(txRes.value.data))
+            ? txRes.value.data
+            : []
+        setRecent(txList)
       } catch (e) {
         console.error('Dashboard error:', e)
       } finally {
@@ -58,10 +65,13 @@ export default function Dashboard() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
   const firstName = user?.name ? user.name.split(' ')[0] : 'there'
 
-  const totalIncome = summary?.total_income ?? 0
-  const totalExpenses = summary?.total_expenses ?? 0
-  const totalBalance = summary?.balance ?? summary?.net ?? (parseFloat(totalIncome) - parseFloat(totalExpenses))
-  const txCount = summary?.total_transactions ?? summary?.transaction_count ?? recent.length ?? 0
+  const calculatedIncome = recent.filter(t => t.type === 'income').reduce((acc, t) => acc + parseFloat(t.amount || 0), 0)
+  const calculatedExpense = recent.filter(t => t.type === 'expense').reduce((acc, t) => acc + parseFloat(t.amount || 0), 0)
+
+  const totalIncome = summary?.total_income != null ? parseFloat(summary.total_income) : calculatedIncome
+  const totalExpenses = summary?.total_expenses != null ? parseFloat(summary.total_expenses) : calculatedExpense
+  const totalBalance = summary?.balance ?? summary?.net ?? (totalIncome - totalExpenses)
+  const txCount = summary?.total_transactions ?? summary?.transaction_count ?? recent.length
 
   const stats = [
     {
