@@ -1,8 +1,8 @@
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-// Use your computer's local IP for physical device over Wi-Fi
-const BASE_URL = 'http://192.168.1.8:8000'
+// Production Render backend (or use 'http://YOUR_LOCAL_IP:8000' for local testing)
+const BASE_URL = 'https://expense-tracker-040n.onrender.com'
 
 const API = axios.create({
   baseURL: BASE_URL,
