@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from ..database import get_db
 from .. import models, schemas
@@ -11,13 +11,14 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=schemas.Token, status_code=status.HTTP_201_CREATED)
 def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing = db.query(models.User).filter(models.User.email == user_in.email).first()
+    clean_email = user_in.email.strip().lower()
+    existing = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user = models.User(
-        name=user_in.name,
-        email=user_in.email,
+        name=user_in.name.strip(),
+        email=clean_email,
         hashed_password=hash_password(user_in.password),
         currency=user_in.currency or "USD",
     )
@@ -30,14 +31,41 @@ def register(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+async def login(request: Request, db: Session = Depends(get_db)):
+    username = None
+    password = None
+
+    content_type = request.headers.get("content-type", "")
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            username = body.get("username") or body.get("email")
+            password = body.get("password")
+        except Exception:
+            pass
+    else:
+        try:
+            form = await request.form()
+            username = form.get("username") or form.get("email")
+            password = form.get("password")
+        except Exception:
+            pass
+
+    if not username or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email and password are required",
+        )
+
+    clean_email = str(username).strip().lower()
+    user = db.query(models.User).filter(func.lower(models.User.email) == clean_email).first()
+    if not user or not verify_password(str(password), user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     token = create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=token, token_type="bearer", user=user)
 

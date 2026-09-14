@@ -27,11 +27,11 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = useCallback(async (email, password) => {
-    const formData = new URLSearchParams()
-    formData.append('username', email)
-    formData.append('password', password)
-    const res = await API.post('/auth/login', formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    const cleanEmail = email.trim().toLowerCase()
+    const res = await API.post('/auth/login', {
+      email: cleanEmail,
+      username: cleanEmail,
+      password: password
     })
     localStorage.setItem('et_token', res.data.access_token)
     localStorage.setItem('et_user', JSON.stringify(res.data.user))
@@ -40,7 +40,11 @@ export function AuthProvider({ children }) {
   }, [])
 
   const register = useCallback(async (name, email, password) => {
-    const res = await API.post('/auth/register', { name, email, password })
+    const res = await API.post('/auth/register', {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password
+    })
     localStorage.setItem('et_token', res.data.access_token)
     localStorage.setItem('et_user', JSON.stringify(res.data.user))
     setUser(res.data.user)

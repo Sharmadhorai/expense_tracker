@@ -29,11 +29,11 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (email, password) => {
-    const params = new URLSearchParams()
-    params.append('username', email)
-    params.append('password', password)
-    const res = await API.post('/auth/login', params.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    const cleanEmail = email.trim().toLowerCase()
+    const res = await API.post('/auth/login', {
+      email: cleanEmail,
+      username: cleanEmail,
+      password: password
     })
     await AsyncStorage.setItem('et_token', res.data.access_token)
     await AsyncStorage.setItem('et_user', JSON.stringify(res.data.user))
@@ -42,7 +42,11 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (name, email, password) => {
-    const res = await API.post('/auth/register', { name, email, password })
+    const res = await API.post('/auth/register', {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password
+    })
     await AsyncStorage.setItem('et_token', res.data.access_token)
     await AsyncStorage.setItem('et_user', JSON.stringify(res.data.user))
     setUser(res.data.user)
