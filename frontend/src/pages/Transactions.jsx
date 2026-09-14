@@ -86,15 +86,15 @@ export default function Transactions() {
       </div>
 
       {/* Filters */}
-      <div style={{ display:'flex', gap:'1rem', alignItems:'center', marginBottom:'1.5rem', flexWrap:'wrap' }}>
-        <div className="tab-bar">
+      <div className="transaction-toolbar">
+        <div className="tab-bar transaction-tabs">
           {['all','income','expense'].map(t => (
             <button key={t} className={`tab-btn ${tab===t?'active':''}`} onClick={() => setTab(t)}>
               {t === 'all' ? 'All' : t === 'income' ? '📈 Income' : '📉 Expense'}
             </button>
           ))}
         </div>
-        <select className="form-select" style={{ width:'auto' }} value={filterCat} onChange={e => setFilterCat(e.target.value)}>
+        <select className="form-select category-filter" aria-label="Filter by category" value={filterCat} onChange={e => setFilterCat(e.target.value)}>
           <option value="">All Categories</option>
           {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
         </select>
@@ -126,7 +126,7 @@ export default function Transactions() {
             <tbody>
               {transactions.map(t => (
                 <tr key={t.id}>
-                  <td style={{ color:'#9090BB', whiteSpace:'nowrap' }}>
+                  <td style={{ color:'var(--text-secondary)', whiteSpace:'nowrap' }}>
                     {new Date(t.date).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })}
                   </td>
                   <td><span className={`badge badge-${t.type}`}>{t.type}</span></td>
@@ -134,20 +134,20 @@ export default function Transactions() {
                     <span style={{ marginRight:'0.4rem' }}>{t.category?.icon || '📦'}</span>
                     {t.category?.name || 'Uncategorized'}
                   </td>
-                  <td style={{ color:'#9090BB', maxWidth:200 }}>
+                  <td style={{ color:'var(--text-secondary)', maxWidth:200 }}>
                     <div style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {t.description || '—'}
                     </div>
                   </td>
                   <td style={{ textAlign:'right', fontWeight:700, whiteSpace:'nowrap',
-                    color: t.type === 'income' ? '#00D4AA' : '#FF6584' }}>
+                    color: t.type === 'income' ? 'var(--income-color)' : 'var(--expense-color)' }}>
                     {t.type === 'income' ? '+' : '-'}{fmt(t.amount, cur)}
                   </td>
                   <td style={{ textAlign:'right' }}>
                     <div style={{ display:'flex', gap:'0.25rem', justifyContent:'flex-end' }}>
                       <button className="btn-icon" title="Edit" onClick={() => openEdit(t)}><RiEditLine /></button>
                       <button className="btn-icon" title="Delete" onClick={() => onDelete(t.id)}
-                        style={{ color:'#FF6584' }}><RiDeleteBinLine /></button>
+                        style={{ color:'var(--expense-color)' }}><RiDeleteBinLine /></button>
                     </div>
                   </td>
                 </tr>

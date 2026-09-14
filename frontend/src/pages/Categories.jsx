@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
 import API from '../api/client'
-import { RiAddLine, RiEditLine, RiDeleteBinLine, RiLockLine } from 'react-icons/ri'
+import { RiAddLine, RiEditLine, RiDeleteBinLine } from 'react-icons/ri'
 
-const COLORS = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD','#98D8C8','#B0B0B0','#6C63FF','#03DAC6','#FF9F43']
+const COLORS = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD','#98D8C8','#B0B0B0','#0ea5e9','#10b981','#FF9F43']
 const EMOJI_OPTIONS = ['🍕','🚗','🛍️','📄','🎬','💊','📚','📦','💼','💻','📈','🏠','🎓','✈️','🏋️','🎮','🎵','☕','🍔','🌴']
 
-const EMPTY_FORM = { name:'', icon:'📦', color:'#6C63FF' }
+const EMPTY_FORM = { name:'', icon:'📦', color:'#0ea5e9' }
 
 export default function Categories() {
   const [categories, setCategories] = useState([])
@@ -50,9 +50,6 @@ export default function Categories() {
     }
   }
 
-  const defaults = categories.filter(c => c.is_default)
-  const custom   = categories.filter(c => !c.is_default)
-
   return (
     <div className="page">
       <div className="page-header">
@@ -65,37 +62,10 @@ export default function Categories() {
         </button>
       </div>
 
-      {/* Default Categories */}
-      <div style={{ marginBottom:'2rem' }}>
-        <div style={{ fontWeight:700, fontSize:'0.85rem', color:'#9090BB', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'1rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-          <RiLockLine /> System Defaults
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'1rem' }}>
-          {defaults.map(c => (
-            <div key={c.id} className="card" style={{ padding:'1.1rem', textAlign:'center', cursor:'default' }}>
-              <div style={{
-                width:52, height:52, borderRadius:14, margin:'0 auto 0.75rem',
-                background: `${c.color}22`, border:`2px solid ${c.color}44`,
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:'1.6rem'
-              }}>{c.icon}</div>
-              <div style={{ fontWeight:600, fontSize:'0.9rem' }}>{c.name}</div>
-              <div style={{ fontSize:'0.7rem', color:'#5A5A7A', marginTop:'0.3rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.25rem' }}>
-                <RiLockLine size={10} /> System
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Custom Categories */}
-      {custom.length > 0 && (
+      {categories.length > 0 && (
         <div>
-          <div style={{ fontWeight:700, fontSize:'0.85rem', color:'#9090BB', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'1rem' }}>
-            ✏️ Your Custom Categories
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'1rem' }}>
-            {custom.map(c => (
+          <div className="categories-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'1rem' }}>
+            {categories.map(c => (
               <div key={c.id} className="card" style={{ padding:'1.1rem', textAlign:'center', position:'relative' }}>
                 <div style={{ position:'absolute', top:'0.6rem', right:'0.6rem', display:'flex', gap:'0.15rem' }}>
                   <button className="btn-icon" style={{ padding:'0.25rem' }} onClick={() => openEdit(c)}><RiEditLine size={13}/></button>
@@ -111,13 +81,6 @@ export default function Categories() {
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {custom.length === 0 && (
-        <div className="empty-state" style={{ padding:'2rem 1rem' }}>
-          <div className="empty-state-icon">🏷️</div>
-          <div className="empty-state-text">No custom categories yet. Create one to get started!</div>
         </div>
       )}
 
@@ -144,8 +107,8 @@ export default function Categories() {
                     <button key={em} type="button" onClick={() => setForm(f => ({...f, icon:em}))}
                       style={{
                         width:38, height:38, borderRadius:8, fontSize:'1.3rem',
-                        background: form.icon===em ? 'rgba(108,99,255,0.3)' : 'rgba(255,255,255,0.05)',
-                        border: form.icon===em ? '2px solid #6C63FF' : '1px solid rgba(255,255,255,0.1)',
+                        background: form.icon===em ? 'var(--primary-light)' : 'var(--bg-card)',
+                        border: form.icon===em ? '2px solid var(--primary)' : '1px solid var(--border)',
                         cursor:'pointer', transition:'all 0.15s'
                       }}>{em}</button>
                   ))}
@@ -166,7 +129,7 @@ export default function Categories() {
                 </div>
               </div>
               {/* Preview */}
-              <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.75rem', background:'rgba(255,255,255,0.03)', borderRadius:10 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.75rem', background:'var(--bg-card)', borderRadius:10 }}>
                 <div style={{
                   width:44, height:44, borderRadius:12, background:`${form.color}22`,
                   border:`2px solid ${form.color}44`,

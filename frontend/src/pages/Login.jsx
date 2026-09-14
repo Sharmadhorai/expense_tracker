@@ -26,20 +26,29 @@ export default function Login() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="auth-page" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)', color: 'var(--text-primary)', position: 'relative' }}>
+      {/* Ambient drifting backdrop animation */}
+      <div className="ambient-glow-wrapper">
+        <div className="ambient-glow glow-1" />
+        <div className="ambient-glow glow-2" />
+        <div className="ambient-glow glow-3" />
+      </div>
+
       {/* Left – Branding */}
-      <div style={{
+      <div className="auth-brand-panel" style={{
         flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        background: 'linear-gradient(135deg, #0D0D1A 0%, #1A1040 50%, #0D1A1A 100%)',
+        background: 'linear-gradient(135deg, var(--bg-base) 0%, var(--bg-surface) 100%)',
         padding: '2rem',
         position: 'relative',
         overflow: 'hidden',
+        borderRight: '1px solid var(--border)',
+        zIndex: 1
       }}>
         {/* Decorative circles */}
         {[
-          { size: 400, x: '-15%', y: '-20%', color: 'rgba(108,99,255,0.12)' },
-          { size: 300, x: '60%',  y: '60%',  color: 'rgba(3,218,198,0.08)' },
-          { size: 200, x: '30%',  y: '40%',  color: 'rgba(255,101,132,0.06)' },
+          { size: 400, x: '-15%', y: '-20%', color: 'var(--primary-light)' },
+          { size: 300, x: '60%',  y: '60%',  color: 'rgba(16,185,129,0.08)' },
+          { size: 200, x: '30%',  y: '40%',  color: 'rgba(244,63,94,0.06)' },
         ].map((c, i) => (
           <div key={i} style={{
             position: 'absolute', width: c.size, height: c.size,
@@ -52,14 +61,14 @@ export default function Login() {
         <div style={{ position: 'relative', textAlign: 'center', maxWidth: 400 }}>
           <div style={{
             width: 80, height: 80, borderRadius: 24, margin: '0 auto 1.5rem',
-            background: 'linear-gradient(135deg, #6C63FF, #03DAC6)',
+            background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '2.5rem', boxShadow: '0 20px 60px rgba(108,99,255,0.4)'
+            fontSize: '2.5rem', boxShadow: '0 20px 60px var(--primary-light)'
           }}>💰</div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-            Expense<span style={{ color: '#6C63FF' }}>Track</span>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
+            Expense<span style={{ color: 'var(--primary)' }}>Track</span>
           </h1>
-          <p style={{ color: '#9090BB', fontSize: '1rem', lineHeight: 1.7 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7 }}>
             Take control of your finances.<br />
             Track income, expenses, and budgets<br />all in one beautiful place.
           </p>
@@ -69,9 +78,9 @@ export default function Login() {
             {['📊 Smart Reports', '💳 Budget Tracking', '📈 Income Analytics', '🔒 Secure'].map(f => (
               <span key={f} style={{
                 padding: '0.4rem 0.9rem', borderRadius: 99,
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                fontSize: '0.78rem', color: '#B0B0D0'
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                fontSize: '0.78rem', color: 'var(--text-secondary)'
               }}>{f}</span>
             ))}
           </div>
@@ -79,14 +88,16 @@ export default function Login() {
       </div>
 
       {/* Right – Form */}
-      <div style={{
+      <div className="auth-form-panel" style={{
         width: '45%', minWidth: 360, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '2rem', background: '#0F0F22',
+        padding: '2rem', background: 'var(--bg-surface)',
+        position: 'relative', zIndex: 1
       }}>
         <div style={{ width: '100%', maxWidth: 400 }} className="animate-fadeIn">
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem' }}>Welcome back</h2>
-          <p style={{ color: '#9090BB', marginBottom: '2rem', fontSize: '0.9rem' }}>
-            Don't have an account? <Link to="/register" style={{ color: '#6C63FF', textDecoration: 'none', fontWeight: 600 }}>Sign up</Link>
+          <div className="mobile-auth-brand"><span>💰</span> ExpenseTrack</div>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem', color: 'var(--text-primary)' }}>Welcome back</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.9rem' }}>
+            Don't have an account? <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>Sign up</Link>
           </p>
 
           {error && <div className="alert alert-error">{error}</div>}

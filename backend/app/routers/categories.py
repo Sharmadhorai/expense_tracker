@@ -14,9 +14,8 @@ def list_categories(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # Return system defaults + user's own categories
     cats = db.query(models.Category).filter(
-        (models.Category.user_id == None) | (models.Category.user_id == current_user.id)
+        models.Category.user_id == current_user.id
     ).all()
     return cats
 
@@ -50,7 +49,7 @@ def update_category(
     cat = db.query(models.Category).filter(models.Category.id == cat_id).first()
     if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
-    if cat.is_default or cat.user_id != current_user.id:
+    if cat.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Cannot modify this category")
 
     if cat_in.name is not None:
@@ -73,7 +72,7 @@ def delete_category(
     cat = db.query(models.Category).filter(models.Category.id == cat_id).first()
     if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
-    if cat.is_default or cat.user_id != current_user.id:
+    if cat.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Cannot delete this category")
     db.delete(cat)
     db.commit()

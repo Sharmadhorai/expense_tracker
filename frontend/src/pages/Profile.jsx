@@ -75,20 +75,20 @@ export default function Profile() {
         </div>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem' }}>
+      <div className="profile-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem' }}>
         {/* Avatar card */}
         <div className="card" style={{ gridColumn:'1 / -1', display:'flex', alignItems:'center', gap:'1.5rem' }}>
           <div style={{
             width:80, height:80, borderRadius:'50%', flexShrink:0,
-            background:'linear-gradient(135deg, #6C63FF, #FF6584)',
+            background:'linear-gradient(135deg, var(--primary), var(--secondary))',
             display:'flex', alignItems:'center', justifyContent:'center',
             fontSize:'1.8rem', fontWeight:800, color:'white',
-            boxShadow:'0 8px 24px rgba(108,99,255,0.4)'
+            boxShadow:'0 8px 24px var(--primary-light)'
           }}>{initials}</div>
           <div>
             <div style={{ fontSize:'1.3rem', fontWeight:800 }}>{user?.name}</div>
-            <div style={{ color:'#9090BB', fontSize:'0.9rem' }}>{user?.email}</div>
-            <div style={{ color:'#9090BB', fontSize:'0.8rem', marginTop:'0.25rem' }}>
+            <div style={{ color:'var(--text-secondary)', fontSize:'0.9rem' }}>{user?.email}</div>
+            <div style={{ color:'var(--text-secondary)', fontSize:'0.8rem', marginTop:'0.25rem' }}>
               Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month:'long', year:'numeric' }) : '—'}
             </div>
           </div>

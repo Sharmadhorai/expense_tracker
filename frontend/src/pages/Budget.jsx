@@ -72,9 +72,9 @@ export default function Budget() {
 
   const getBarColor = (spent, budget) => {
     const pct = (spent / budget) * 100
-    if (pct >= 100) return '#FF6584'
-    if (pct >= 80)  return '#FF9F43'
-    return '#00D4AA'
+    if (pct >= 100) return 'var(--expense-color)'
+    if (pct >= 80)  return 'var(--warning-color)'
+    return 'var(--income-color)'
   }
 
   return (
@@ -91,12 +91,12 @@ export default function Budget() {
 
       {/* Month/Year selector */}
       <div style={{ display:'flex', gap:'0.75rem', marginBottom:'2rem', alignItems:'center' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'0.4rem 0.75rem' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', background:'var(--bg-card)', border:'1px solid var(--border)', borderRadius:10, padding:'0.4rem 0.75rem' }}>
           <button onClick={() => { if(month===1){setMonth(12);setYear(y=>y-1)}else setMonth(m=>m-1) }}
-            style={{ background:'none', border:'none', color:'#9090BB', cursor:'pointer', fontSize:'1.1rem', lineHeight:1 }}>‹</button>
+            style={{ background:'none', border:'none', color:'var(--text-secondary)', cursor:'pointer', fontSize:'1.1rem', lineHeight:1 }}>‹</button>
           <span style={{ fontWeight:600, fontSize:'0.9rem', minWidth:80, textAlign:'center' }}>{months[month-1]} {year}</span>
           <button onClick={() => { if(month===12){setMonth(1);setYear(y=>y+1)}else setMonth(m=>m+1) }}
-            style={{ background:'none', border:'none', color:'#9090BB', cursor:'pointer', fontSize:'1.1rem', lineHeight:1 }}>›</button>
+            style={{ background:'none', border:'none', color:'var(--text-secondary)', cursor:'pointer', fontSize:'1.1rem', lineHeight:1 }}>›</button>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export default function Budget() {
           <div className="empty-state-text">No budgets set for {months[month-1]} {year}. Click "Set Budget" to add one.</div>
         </div>
       ) : (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'1.25rem' }}>
+        <div className="budget-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'1.25rem' }}>
           {budgets.map(b => {
             const spent = parseFloat(b.spent) || 0
             const budget = parseFloat(b.amount)
@@ -123,25 +123,25 @@ export default function Budget() {
               <div key={b.id} className="card" style={{ position:'relative' }}>
                 <div style={{ position:'absolute', top:'0.8rem', right:'0.8rem', display:'flex', gap:'0.15rem' }}>
                   <button className="btn-icon" style={{ padding:'0.25rem' }} onClick={() => openEdit(b)}><RiEditLine size={13}/></button>
-                  <button className="btn-icon" style={{ padding:'0.25rem', color:'#FF6584' }} onClick={() => onDelete(b.id)}><RiDeleteBinLine size={13}/></button>
+                  <button className="btn-icon" style={{ padding:'0.25rem', color:'var(--expense-color)' }} onClick={() => onDelete(b.id)}><RiDeleteBinLine size={13}/></button>
                 </div>
 
                 <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1rem' }}>
                   <div style={{
                     width:44, height:44, borderRadius:12,
-                    background: b.category ? `${b.category.color}22` : 'rgba(108,99,255,0.15)',
-                    border: `2px solid ${b.category ? b.category.color+'44' : 'rgba(108,99,255,0.3)'}`,
+                    background: b.category ? `${b.category.color}22` : 'var(--primary-light)',
+                    border: `2px solid ${b.category ? b.category.color+'44' : 'var(--primary-light)'}`,
                     display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.4rem'
                   }}>{b.category?.icon || '💼'}</div>
                   <div>
                     <div style={{ fontWeight:700 }}>{b.category?.name || 'Overall Budget'}</div>
-                    <div style={{ fontSize:'0.78rem', color:'#9090BB' }}>{months[month-1]} {year}</div>
+                    <div style={{ fontSize:'0.78rem', color:'var(--text-secondary)' }}>{months[month-1]} {year}</div>
                   </div>
                 </div>
 
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.5rem', fontSize:'0.85rem' }}>
-                  <span style={{ color:'#9090BB' }}>Spent: <strong style={{ color:'#F0F0FF' }}>{fmt(spent, cur)}</strong></span>
-                  <span style={{ color:'#9090BB' }}>Budget: <strong style={{ color:'#F0F0FF' }}>{fmt(budget, cur)}</strong></span>
+                  <span style={{ color:'var(--text-secondary)' }}>Spent: <strong style={{ color:'var(--text-primary)' }}>{fmt(spent, cur)}</strong></span>
+                  <span style={{ color:'var(--text-secondary)' }}>Budget: <strong style={{ color:'var(--text-primary)' }}>{fmt(budget, cur)}</strong></span>
                 </div>
 
                 <div className="progress-bar-track" style={{ marginBottom:'0.75rem' }}>
@@ -149,12 +149,12 @@ export default function Budget() {
                 </div>
 
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                  <div style={{ fontSize:'0.78rem', color:'#9090BB' }}>
+                  <div style={{ fontSize:'0.78rem', color:'var(--text-secondary)' }}>
                     {pct.toFixed(1)}% used
                   </div>
                   <div style={{
                     fontSize:'0.85rem', fontWeight:700,
-                    color: remaining >= 0 ? '#00D4AA' : '#FF6584'
+                    color: remaining >= 0 ? 'var(--income-color)' : 'var(--expense-color)'
                   }}>
                     {remaining >= 0 ? `${fmt(remaining, cur)} left` : `${fmt(Math.abs(remaining), cur)} over`}
                   </div>

@@ -9,7 +9,7 @@ import {
 const fmt = (n, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 2 }).format(n || 0)
 
-const COLORS = ['#6C63FF','#03DAC6','#FF6584','#FF9F43','#00D4AA','#A29BFE','#FD79A8','#74B9FF']
+const COLORS = ['#0ea5e9', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6', '#14b8a6']
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -65,10 +65,10 @@ export default function Dashboard() {
   const balance = (summary?.total_income || 0) - (summary?.total_expenses || 0)
 
   const statCards = [
-    { label: 'Total Balance', value: fmt(balance, cur), icon:'💰', accent:'#6C63FF', bg:'rgba(108,99,255,0.12)', sub: 'All time' },
-    { label: 'Total Income',  value: fmt(summary?.total_income, cur), icon:'📈', accent:'#00D4AA', bg:'rgba(0,212,170,0.12)', sub: 'All time' },
-    { label: 'Total Expenses',value: fmt(summary?.total_expenses, cur), icon:'📉', accent:'#FF6584', bg:'rgba(255,101,132,0.12)', sub: 'All time' },
-    { label: 'Transactions',  value: summary?.transaction_count || 0, icon:'🔄', accent:'#FF9F43', bg:'rgba(255,159,67,0.12)', sub: 'Total records' },
+    { label: 'Total Balance', value: fmt(balance, cur), icon:'💰', accent:'var(--primary)', bg:'var(--primary-light)', sub: 'All time' },
+    { label: 'Total Income',  value: fmt(summary?.total_income, cur), icon:'📈', accent:'var(--income-color)', bg:'rgba(16, 185, 129, 0.12)', sub: 'All time' },
+    { label: 'Total Expenses',value: fmt(summary?.total_expenses, cur), icon:'📉', accent:'var(--expense-color)', bg:'rgba(244, 63, 94, 0.12)', sub: 'All time' },
+    { label: 'Transactions',  value: summary?.transaction_count || 0, icon:'🔄', accent:'var(--warning-color)', bg:'rgba(245, 158, 11, 0.12)', sub: 'Total records' },
   ]
 
   return (
@@ -79,7 +79,7 @@ export default function Dashboard() {
           <h1 className="page-title">{greeting()}, {user?.name?.split(' ')[0]}! 👋</h1>
           <p className="page-subtitle">Here's your financial overview</p>
         </div>
-        <div style={{ fontSize:'0.85rem', color:'#9090BB' }}>
+        <div style={{ fontSize:'0.85rem', color:'var(--text-secondary)' }}>
           {now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function Dashboard() {
       </div>
 
       {/* Charts row */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem', marginBottom:'2rem' }}>
+      <div className="dashboard-charts" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem', marginBottom:'2rem' }}>
         {/* Income vs Expense Bar Chart */}
         <div className="card">
           <div style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'1rem' }}>
@@ -106,12 +106,12 @@ export default function Dashboard() {
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={trend} margin={{ top:0, right:0, left:-20, bottom:0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="label" tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background:'#1A1A35', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#F0F0FF' }} />
-              <Bar dataKey="income"  fill="#00D4AA" radius={[4,4,0,0]} name="Income" />
-              <Bar dataKey="expense" fill="#FF6584" radius={[4,4,0,0]} name="Expense" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="label" tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background:'var(--bg-modal)', border:'1px solid var(--border)', borderRadius:10, color:'var(--text-primary)' }} />
+              <Bar dataKey="income"  fill="var(--income-color)" radius={[4,4,0,0]} name="Income" />
+              <Bar dataKey="expense" fill="var(--expense-color)" radius={[4,4,0,0]} name="Expense" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -132,8 +132,8 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip formatter={(v) => fmt(v, cur)}
-                  contentStyle={{ background:'#1A1A35', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#F0F0FF' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize:11, color:'#9090BB' }} />
+                  contentStyle={{ background:'var(--bg-modal)', border:'1px solid var(--border)', borderRadius:10, color:'var(--text-primary)' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize:11, color:'var(--text-secondary)' }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
@@ -149,7 +149,7 @@ export default function Dashboard() {
       <div className="card">
         <div style={{ fontWeight:700, marginBottom:'1.25rem', fontSize:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <span>🕐 Recent Transactions</span>
-          <a href="/transactions" style={{ fontSize:'0.8rem', color:'#6C63FF', textDecoration:'none' }}>View all →</a>
+          <a href="/transactions" style={{ fontSize:'0.8rem', color:'var(--primary)', textDecoration:'none' }}>View all →</a>
         </div>
         {recent.length === 0 ? (
           <div className="empty-state">
@@ -169,14 +169,14 @@ export default function Dashboard() {
             <tbody>
               {recent.map(t => (
                 <tr key={t.id}>
-                  <td style={{ color:'#9090BB' }}>{new Date(t.date).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</td>
+                  <td style={{ color:'var(--text-secondary)' }}>{new Date(t.date).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</td>
                   <td>
                     <span style={{ marginRight:'0.4rem' }}>{t.category?.icon || '📦'}</span>
                     {t.category?.name || 'Uncategorized'}
                   </td>
-                  <td style={{ color:'#9090BB' }}>{t.description || '—'}</td>
+                  <td style={{ color:'var(--text-secondary)' }}>{t.description || '—'}</td>
                   <td style={{ textAlign:'right', fontWeight:700,
-                    color: t.type === 'income' ? '#00D4AA' : '#FF6584' }}>
+                    color: t.type === 'income' ? 'var(--income-color)' : 'var(--expense-color)' }}>
                     {t.type === 'income' ? '+' : '-'}{fmt(t.amount, cur)}
                   </td>
                 </tr>

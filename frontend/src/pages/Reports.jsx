@@ -9,7 +9,7 @@ import {
 const fmt = (n, currency='USD') =>
   new Intl.NumberFormat('en-US', { style:'currency', currency, maximumFractionDigits:0 }).format(n || 0)
 
-const COLORS = ['#6C63FF','#03DAC6','#FF6584','#FF9F43','#00D4AA','#A29BFE','#FD79A8','#74B9FF']
+const COLORS = ['#0ea5e9', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6', '#14b8a6']
 
 export default function Reports() {
   const { user } = useAuth()
@@ -83,13 +83,13 @@ export default function Reports() {
       {/* Summary cards */}
       <div className="stats-grid" style={{ marginBottom:'2rem' }}>
         {[
-          { label:'Total Income',   value:fmt(summary?.total_income, cur),   accent:'#00D4AA', icon:'📈' },
-          { label:'Total Expenses', value:fmt(summary?.total_expenses, cur), accent:'#FF6584', icon:'📉' },
-          { label:'Net Balance',    value:fmt(balance, cur),                 accent: balance>=0?'#00D4AA':'#FF6584', icon:'💰' },
-          { label:'Transactions',   value:summary?.transaction_count || 0,  accent:'#6C63FF', icon:'🔄' },
+          { label:'Total Income',   value:fmt(summary?.total_income, cur),   accent:'var(--income-color)', bg:'rgba(16, 185, 129, 0.12)', icon:'📈' },
+          { label:'Total Expenses', value:fmt(summary?.total_expenses, cur), accent:'var(--expense-color)', bg:'rgba(244, 63, 94, 0.12)', icon:'📉' },
+          { label:'Net Balance',    value:fmt(balance, cur),                 accent: balance>=0?'var(--income-color)':'var(--expense-color)', bg: balance>=0?'rgba(16, 185, 129, 0.12)':'rgba(244, 63, 94, 0.12)', icon:'💰' },
+          { label:'Transactions',   value:summary?.transaction_count || 0,  accent:'var(--primary)', bg:'var(--primary-light)', icon:'🔄' },
         ].map((s,i) => (
           <div key={i} className="stat-card"
-            style={{ '--card-accent':s.accent, '--card-accent-bg':`${s.accent}18` }}>
+            style={{ '--card-accent':s.accent, '--card-accent-bg':s.bg }}>
             <div className="stat-card-icon">{s.icon}</div>
             <div className="stat-card-label">{s.label}</div>
             <div className="stat-card-value" style={{ color:s.accent }}>{s.value}</div>
@@ -102,19 +102,19 @@ export default function Reports() {
           <div className="spinner" style={{ width:36,height:36 }} />
         </div>
       ) : (
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem' }}>
+        <div className="reports-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem' }}>
           {/* Line / Bar Trend Chart */}
           <div className="card" style={{ gridColumn:'1 / -1' }}>
             <div style={{ fontWeight:700, marginBottom:'1.25rem' }}>📊 Income vs Expenses Trend</div>
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={trend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="label" tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background:'#1A1A35', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#F0F0FF' }} formatter={v => fmt(v, cur)} />
-                <Legend wrapperStyle={{ color:'#9090BB', fontSize:12 }} />
-                <Line type="monotone" dataKey="income"  stroke="#00D4AA" strokeWidth={2.5} dot={false} name="Income" />
-                <Line type="monotone" dataKey="expense" stroke="#FF6584" strokeWidth={2.5} dot={false} name="Expense" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="label" tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background:'var(--bg-modal)', border:'1px solid var(--border)', borderRadius:10, color:'var(--text-primary)' }} formatter={v => fmt(v, cur)} />
+                <Legend wrapperStyle={{ color:'var(--text-secondary)', fontSize:12 }} />
+                <Line type="monotone" dataKey="income"  stroke="var(--income-color)" strokeWidth={2.5} dot={false} name="Income" />
+                <Line type="monotone" dataKey="expense" stroke="var(--expense-color)" strokeWidth={2.5} dot={false} name="Expense" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -130,8 +130,8 @@ export default function Reports() {
                     {breakdown.map((e,i) => <Cell key={i} fill={e.category_color || COLORS[i%COLORS.length]} />)}
                   </Pie>
                   <Tooltip formatter={v => fmt(v,cur)}
-                    contentStyle={{ background:'#1A1A35', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#F0F0FF' }} />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize:11, color:'#9090BB' }} />
+                    contentStyle={{ background:'var(--bg-modal)', border:'1px solid var(--border)', borderRadius:10, color:'var(--text-primary)' }} />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize:11, color:'var(--text-secondary)' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -144,13 +144,13 @@ export default function Reports() {
             <div style={{ fontWeight:700, marginBottom:'1.25rem' }}>📊 Income vs Expenses Bar</div>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={trend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="label" tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill:'#9090BB', fontSize:11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background:'#1A1A35', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, color:'#F0F0FF' }} formatter={v => fmt(v,cur)} />
-                <Legend wrapperStyle={{ color:'#9090BB', fontSize:12 }} />
-                <Bar dataKey="income"  fill="#00D4AA" radius={[4,4,0,0]} name="Income" />
-                <Bar dataKey="expense" fill="#FF6584" radius={[4,4,0,0]} name="Expense" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="label" tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill:'var(--text-secondary)', fontSize:11 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background:'var(--bg-modal)', border:'1px solid var(--border)', borderRadius:10, color:'var(--text-primary)' }} formatter={v => fmt(v,cur)} />
+                <Legend wrapperStyle={{ color:'var(--text-secondary)', fontSize:12 }} />
+                <Bar dataKey="income"  fill="var(--income-color)" radius={[4,4,0,0]} name="Income" />
+                <Bar dataKey="expense" fill="var(--expense-color)" radius={[4,4,0,0]} name="Expense" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -172,11 +172,11 @@ export default function Reports() {
                   {breakdown.map((b,i) => (
                     <tr key={i}>
                       <td><span style={{ marginRight:'0.4rem' }}>{b.category_icon}</span>{b.category_name}</td>
-                      <td style={{ textAlign:'right', fontWeight:600, color:'#FF6584' }}>{fmt(b.total, cur)}</td>
-                      <td style={{ textAlign:'right', color:'#9090BB' }}>{b.percentage.toFixed(1)}%</td>
+                      <td style={{ textAlign:'right', fontWeight:600, color:'var(--expense-color)' }}>{fmt(b.total, cur)}</td>
+                      <td style={{ textAlign:'right', color:'var(--text-secondary)' }}>{b.percentage.toFixed(1)}%</td>
                       <td style={{ width:160 }}>
                         <div className="progress-bar-track">
-                          <div className="progress-bar-fill" style={{ width:`${b.percentage}%`, background: b.category_color || '#6C63FF' }} />
+                          <div className="progress-bar-fill" style={{ width:`${b.percentage}%`, background: b.category_color || 'var(--primary)' }} />
                         </div>
                       </td>
                     </tr>
