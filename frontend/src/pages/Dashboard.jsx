@@ -26,17 +26,26 @@ export default function Dashboard() {
   const year = now.getFullYear()
 
   useEffect(() => {
-    Promise.all([
-      API.get('/reports/summary'),
-      API.get(`/reports/monthly-trend?year=${year}`),
-      API.get('/reports/category-breakdown'),
-      API.get('/reports/recent-transactions?limit=8'),
-    ]).then(([sumRes, trendRes, catRes, recRes]) => {
-      setSummary(sumRes.data)
-      setTrend(trendRes.data)
-      setBreakdown(catRes.data)
-      setRecent(recRes.data)
-    }).finally(() => setLoading(false))
+    const loadData = async () => {
+      setLoading(true)
+      try {
+        const [sumRes, trendRes, catRes, recRes] = await Promise.allSettled([
+          API.get('/reports/summary'),
+          API.get(`/reports/trend?period=monthly&year=${year}`),
+          API.get('/reports/category-breakdown'),
+          API.get('/reports/recent-transactions?limit=8'),
+        ])
+        if (sumRes.status === 'fulfilled') setSummary(sumRes.value.data)
+        if (trendRes.status === 'fulfilled') setTrend(trendRes.value.data)
+        if (catRes.status === 'fulfilled') setBreakdown(catRes.value.data)
+        if (recRes.status === 'fulfilled') setRecent(recRes.value.data)
+      } catch (e) {
+        console.error('Dashboard error:', e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
   }, [year])
 
   if (loading) return (
@@ -49,10 +58,15 @@ export default function Dashboard() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
   const firstName = user?.name ? user.name.split(' ')[0] : 'there'
 
+  const totalIncome = summary?.total_income ?? 0
+  const totalExpenses = summary?.total_expenses ?? 0
+  const totalBalance = summary?.balance ?? summary?.net ?? (parseFloat(totalIncome) - parseFloat(totalExpenses))
+  const txCount = summary?.total_transactions ?? summary?.transaction_count ?? recent.length ?? 0
+
   const stats = [
     {
       label: 'TOTAL BALANCE',
-      value: fmt(summary?.balance, cur),
+      value: fmt(totalBalance, cur),
       sub: 'All time',
       accent: 'var(--primary)',
       bg: 'var(--primary-light)',
@@ -60,7 +74,7 @@ export default function Dashboard() {
     },
     {
       label: 'TOTAL INCOME',
-      value: fmt(summary?.total_income, cur),
+      value: fmt(totalIncome, cur),
       sub: 'All time',
       accent: 'var(--income-color)',
       bg: 'rgba(16,185,129,0.12)',
@@ -68,7 +82,7 @@ export default function Dashboard() {
     },
     {
       label: 'TOTAL EXPENSES',
-      value: fmt(summary?.total_expenses, cur),
+      value: fmt(totalExpenses, cur),
       sub: 'All time',
       accent: 'var(--expense-color)',
       bg: 'rgba(244,63,94,0.12)',
@@ -76,7 +90,7 @@ export default function Dashboard() {
     },
     {
       label: 'TRANSACTIONS',
-      value: summary?.total_transactions ?? 0,
+      value: txCount,
       sub: 'Total records',
       accent: 'var(--secondary)',
       bg: 'rgba(245,158,11,0.12)',

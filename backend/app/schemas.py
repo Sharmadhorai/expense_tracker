@@ -133,7 +133,9 @@ class ReportSummary(BaseModel):
     total_income: Decimal
     total_expenses: Decimal
     net: Decimal
+    balance: Optional[Decimal] = None
     transaction_count: int
+    total_transactions: Optional[int] = None
 
 
 class CategoryBreakdown(BaseModel):

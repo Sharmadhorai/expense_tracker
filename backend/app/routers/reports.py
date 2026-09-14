@@ -29,12 +29,15 @@ def get_summary(
     income = base.filter(models.Transaction.type == "income").with_entities(func.sum(models.Transaction.amount)).scalar() or Decimal("0")
     expenses = base.filter(models.Transaction.type == "expense").with_entities(func.sum(models.Transaction.amount)).scalar() or Decimal("0")
     count = base.count()
+    net = Decimal(str(income)) - Decimal(str(expenses))
 
     return schemas.ReportSummary(
         total_income=income,
         total_expenses=expenses,
-        net=Decimal(str(income)) - Decimal(str(expenses)),
+        net=net,
+        balance=net,
         transaction_count=count,
+        total_transactions=count,
     )
 
 
